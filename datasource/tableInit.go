@@ -10,6 +10,7 @@ func Createtable() {
 		&model.Article{},
 		&model.User{},
 		&model.Role{},
+		&model.Area{},
 
 	)
 	//if !DB.HasTable(&model.Area{}) {
