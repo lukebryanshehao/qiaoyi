@@ -6,7 +6,7 @@ import (
 )
 
 type RoleRepository interface {
-	PageQuery(page *model.Page) (*[]model.Role)
+	PageQuery(page *model.Page) (int,[]model.Role)
 	Save(role *model.Role) (bool,*model.Role)
 	DeleteByID(id uint) (bool)
 }
@@ -18,16 +18,22 @@ func NewRoleRepository() RoleRepository {
 type roleMemoryRepository struct {
 }
 
-func (r *roleMemoryRepository) PageQuery(page *model.Page) (roles *[]model.Role) {
-	roles = &[]model.Role{}
+func (r *roleMemoryRepository) PageQuery(page *model.Page) (int,[]model.Role) {
+	roles := []model.Role{}
 
 	if page.PageSize == 0 {
 		page.PageIndex = 0
 		page.PageSize = 10
 	}
-
-	datasource.DB.Limit(page.PageSize).Offset(page.PageSize * page.PageIndex).Find(roles)
-	return roles
+	var allcount int
+	datasource.DB.Find(&roles).Count(&allcount)
+	datasource.DB.Limit(page.PageSize).Offset(page.PageSize * page.PageIndex).Find(&roles)
+	for i := 0;i< len(roles);i++  {
+		var users []model.User
+		datasource.DB.Where("roleid = ?",roles[i].ID).Find(&users)
+		roles[i].Users = users
+	}
+	return allcount,roles
 }
 
 func (r *roleMemoryRepository) Save(role *model.Role) (bool,*model.Role) {

@@ -1,11 +1,10 @@
 package controllers
 
 import (
-	"qiaoyi_back/model"
-	"qiaoyi_back/services"
-	"qiaoyi_back/repositorys"
-	"encoding/json"
 	"github.com/kataras/iris"
+	"qiaoyi_back/model"
+	"qiaoyi_back/repositorys"
+	"qiaoyi_back/services"
 )
 
 type AreaController struct {
@@ -50,12 +49,11 @@ func (c *AreaController) PostUpdate(context iris.Context) (model.ResultBean)  {
 func (c *AreaController) PostAll(context iris.Context) (model.ResultBean)  {
 	page := &model.Page{}
 	context.ReadJSON(&page)
-	var areas = c.Service.PageQuery(page)
-	res, err := json.Marshal(areas)
-	resultBean := model.CreateResultWithData(res)
-	if err != nil {
-		resultBean = model.CreateResultWithMsg("")
-		panic(err)
+	allcount,areas := c.Service.PageQuery(page)
+	//res, err := json.Marshal(areas)
+	resultBean := model.CreateResultWithCountAndData(allcount,areas)
+	if allcount < 1 {
+		resultBean = model.CreateResultWithMsg("没有获取到数据!")
 	}
 	return resultBean
 }

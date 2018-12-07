@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"qiaoyi_back/model"
 	"qiaoyi_back/repositorys"
+	"qiaoyi_back/datasource"
 	"qiaoyi_back/services"
 	"qiaoyi_back/utils"
 	"time"
@@ -22,7 +23,7 @@ func NewLoginController() *LoginController {
 	return &LoginController{Service: services.NewLoginService(repositorys.NewLoginRepository())}
 }
 
-var key = "nKhiUoaSwRegTviVohjAOd"
+var key = datasource.DBconfig.TokenKey
 
 func (c *LoginController) Get(context iris.Context) (mvc.Result)  {
 	return mvc.View{
@@ -133,7 +134,7 @@ func (c *LoginController) PostUpdatepassword(context iris.Context) (model.Result
 
 func (c *LoginController) PostGetinfo(context iris.Context) {
 	user := c.Service.GetInfo(context.Request().FormValue("username"))
-	resultBean := model.CreateResultWithMsg("h获取失败")
+	resultBean := model.CreateResultWithMsg("获取失败")
 	if user.ID != 0{
 		resultBean = model.CreateResultWithData(user)
 	}

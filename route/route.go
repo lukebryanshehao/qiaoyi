@@ -11,6 +11,7 @@ func InitRouter(app *iris.Application) {
 	mvc.New(app.Party("/index")).Handle(controllers.NewIndexController())
 	mvc.New(app.Party("/login")).Handle(controllers.NewLoginController())
 	mvc.New(app.Party("/role")).Handle(controllers.NewRoleController())
+	mvc.New(app.Party("/user")).Handle(controllers.NewUserController())
 	//mvc.Configure(app.Party("/area"), area)
 
 }

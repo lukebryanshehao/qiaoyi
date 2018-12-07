@@ -19,10 +19,10 @@ func NewRoleController() *RoleController {
 func (c *RoleController) Post(context iris.Context) (mvc.Result)  {
 	page := &model.Page{}
 	context.ReadJSON(&page)
-	roles := c.Service.PageQuery(page)
+	allcount,roles := c.Service.PageQuery(page)
 	return mvc.View{
 		Name: "admin-role.html",
-		Data: model.CreateResultWithData(roles),
+		Data: model.CreateResultWithCountAndData(allcount,roles),
 	}
 }
 
@@ -40,9 +40,10 @@ func (c *RoleController) PostDelete(context iris.Context)  (model.ResultBean) {
 func (c *RoleController) Put(context iris.Context)  (model.ResultBean) {
 	role := &model.Role{}
 	context.ReadJSON(&role)
+	id := role.ID
 	flag,role := c.Service.Save(role)
 	msg := "添加"
-	if role.ID != 0 {
+	if id != 0 {
 		msg = "修改"
 	}
 	resultBean := model.CreateResultWithMsg(msg+"失败!")

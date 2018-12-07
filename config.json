@@ -1,6 +1,7 @@
 {
   "Port":"8080",
   "StaticPath":"C:/Users/SpaceJ/go/src/qiaoyi_back",
+  "TokenKey":"nKhiUoaSwRegTviVohjAOd",
   "UserName":"root",
   "Password":"123456",
   "Ip":"localhost",

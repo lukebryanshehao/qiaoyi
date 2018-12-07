@@ -6,7 +6,7 @@ import (
 )
 
 type RoleService interface {
-	PageQuery(page *model.Page) (*[]model.Role)
+	PageQuery(page *model.Page) (int,[]model.Role)
 	Save(role *model.Role) (bool,*model.Role)
 	DeleteByID(id uint) (bool)
 }
@@ -19,7 +19,7 @@ type roleService struct {
 	repo repositorys.RoleRepository
 }
 
-func (s *roleService) PageQuery(page *model.Page) (*[]model.Role) {
+func (s *roleService) PageQuery(page *model.Page) (int,[]model.Role) {
 	return s.repo.PageQuery(page)
 }
 

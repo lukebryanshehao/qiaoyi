@@ -9,7 +9,7 @@ type AreaService interface {
 	Insert(area *model.Area) uint
 	DeleteByID(id uint) bool
 	Update(area *model.Area) bool
-	PageQuery(page *model.Page) []model.Area
+	PageQuery(page *model.Page) (int,[]model.Area)
 	GetByID(id int) (model.Area,bool)
 }
 
@@ -30,7 +30,7 @@ func (s *areaService) DeleteByID(id uint) bool {
 func (s *areaService) Update(area *model.Area) bool {
 	return s.repo.Update(area)
 }
-func (s *areaService) PageQuery(page *model.Page) []model.Area {
+func (s *areaService) PageQuery(page *model.Page) (int,[]model.Area) {
 	return s.repo.PageQuery(page)
 }
 func (s *areaService) GetByID(id int) (model.Area,bool) {

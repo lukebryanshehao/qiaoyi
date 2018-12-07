@@ -11,7 +11,7 @@ type AreaRepository interface {
 	Insert(area *model.Area) uint
 	DeleteByID(id uint) bool
 	Update(area *model.Area) bool
-	PageQuery(page *model.Page) []model.Area
+	PageQuery(page *model.Page) (int,[]model.Area)
 	GetByID(id int) (model.Area,bool)
 }
 
@@ -55,17 +55,24 @@ func (r *areaMemoryRepository) Update(area *model.Area) bool {
 	}
 	return flag
 }
-func (r *areaMemoryRepository) PageQuery(page *model.Page) []model.Area {
+func (r *areaMemoryRepository) PageQuery(page *model.Page) (int,[]model.Area) {
 	var areaArr []model.Area
 	if page.PageSize == 0 {
 		page.PageIndex = 0
 		page.PageSize = 10
 	}
+	var allcount int
+	datasource.DB.Find(&areaArr).Count(&allcount)
 	if err := datasource.DB.Table("areas").Limit(page.PageSize).Offset(page.PageSize * page.PageIndex).Scan(&areaArr).Error; err != nil{
 		panic(err)
 	}
+	for i := 0;i< len(areaArr);i++  {
+		var users []model.User
+		datasource.DB.Where("areaid = ?",areaArr[i].ID).Find(&users)
+		areaArr[i].Users = users
+	}
 
-	return areaArr
+	return allcount,areaArr
 }
 func (r *areaMemoryRepository) GetByID(id int) (model.Area,bool) {
 	//db.Raw("SELECT name, age FROM users WHERE name = ?", 3).Scan(&result)
