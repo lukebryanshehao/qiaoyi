@@ -46,3 +46,4 @@ func (s *loginMemoryRepository) GetInfo(username string) (model.User) {
 	user1.Area = area
 	return user1
 }
+

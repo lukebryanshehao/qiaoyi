@@ -7,7 +7,7 @@ import (
 
 type UserRepository interface {
 	PageQuery(page *model.Page) (int,[]model.User)
-	Save(role *model.User) (bool,*model.User)
+	Save(user *model.User) (bool,*model.User)
 	DeleteByID(id uint) (bool)
 	GetByID(id uint) (bool,model.User)
 }

@@ -27,17 +27,25 @@
 </head>
 <body>
 <article class="page-container">
-	<form action="" method="post" class="form form-horizontal" id="form-admin-role-add">
+	<form action="/role/update" method="post" class="form form-horizontal" id="form-admin-role-add">
+		<input type="hidden"  id="ID" name="ID" value="{{.ResultBean.Data.ID}}" />
+		<input type="hidden"  id="CreatedAt" name="CreatedAt" value="{{.ResultBean.Data.CreatedAt}}" />
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>角色名称：</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="" placeholder="" id="roleName" name="roleName">
+				<input type="text" class="input-text" value="{{.ResultBean.Data.Rolename}}" placeholder="" id="Rolename" name="Rolename">
 			</div>
 		</div>
 		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-3">备注：</label>
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>权重：</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="" placeholder="" id="" name="">
+				<input type="text" class="input-text" value="{{.ResultBean.Data.Weight}}" placeholder="" id="Weight" name="Weight">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">描述：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="{{.ResultBean.Data.Remark}}" placeholder="Remark" id="" name="Remark">
 			</div>
 		</div>
 		<div class="row cl">
@@ -189,9 +197,12 @@ $(function(){
 		submitHandler:function(form){
 			$(form).ajaxSubmit();
 			var index = parent.layer.getFrameIndex(window.name);
+            parent.location.reload();
 			parent.layer.close(index);
+
 		}
 	});
+
 });
 </script>
 <!--/请在上方写此页面业务相关的脚本-->

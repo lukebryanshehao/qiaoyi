@@ -13,6 +13,7 @@ type AreaRepository interface {
 	Update(area *model.Area) bool
 	PageQuery(page *model.Page) (int,[]model.Area)
 	GetByID(id int) (model.Area,bool)
+	GetTree(id string) []model.Area
 }
 
 func NewAreaRepository() AreaRepository {
@@ -68,7 +69,7 @@ func (r *areaMemoryRepository) PageQuery(page *model.Page) (int,[]model.Area) {
 	}
 	for i := 0;i< len(areaArr);i++  {
 		var users []model.User
-		datasource.DB.Where("areaid = ?",areaArr[i].ID).Find(&users)
+		datasource.DB.Select("id,name,areaid,roleid").Where("areaid = ?",areaArr[i].ID).Find(&users)
 		areaArr[i].Users = users
 	}
 
@@ -85,4 +86,15 @@ func (r *areaMemoryRepository) GetByID(id int) (model.Area,bool) {
 	}
 
 	return area,flag
+}
+func (r *areaMemoryRepository) GetTree(id string) []model.Area {
+	var area model.Area
+	var areas []model.Area
+	err1 := datasource.DB.Find(area,id)
+	err2 := datasource.DB.Table("areas").Where("innercode like ?",area.Innercode+"%").Order("innercode asc").Scan(&areas).Error
+	if err1 != nil || err2 != nil{
+		// panic(err)
+	}
+
+	return areas
 }

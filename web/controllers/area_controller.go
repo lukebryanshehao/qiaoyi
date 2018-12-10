@@ -67,3 +67,14 @@ func (c *AreaController) GetBy(id int) (model.ResultBean)  {
 	return resultBean
 }
 
+func (c *AreaController) GetTree(context iris.Context) (model.ResultBean)  {
+	id := context.Request().FormValue("id")
+	areaarr := c.Service.GetTree(id)
+	resultBean := model.CreateResultWithMsg("获取失败!")
+	if len(areaarr) > 0 {
+		resultBean = model.CreateResultWithData(areaarr)
+	}
+	return resultBean
+}
+
+

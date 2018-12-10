@@ -7,6 +7,7 @@ import (
 
 type RoleService interface {
 	PageQuery(page *model.Page) (int,[]model.Role)
+	GetByID(id int) (model.Role,bool)
 	Save(role *model.Role) (bool,*model.Role)
 	DeleteByID(id uint) (bool)
 }
@@ -21,6 +22,10 @@ type roleService struct {
 
 func (s *roleService) PageQuery(page *model.Page) (int,[]model.Role) {
 	return s.repo.PageQuery(page)
+}
+
+func (s *roleService) GetByID(id int) (model.Role,bool) {
+	return s.repo.GetByID(id)
 }
 
 func (s *roleService) Save(role *model.Role) (bool,*model.Role) {

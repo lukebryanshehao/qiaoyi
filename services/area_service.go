@@ -11,6 +11,7 @@ type AreaService interface {
 	Update(area *model.Area) bool
 	PageQuery(page *model.Page) (int,[]model.Area)
 	GetByID(id int) (model.Area,bool)
+	GetTree(id string) []model.Area
 }
 
 func NewAreaService(repo repositorys.AreaRepository) AreaService {
@@ -35,4 +36,7 @@ func (s *areaService) PageQuery(page *model.Page) (int,[]model.Area) {
 }
 func (s *areaService) GetByID(id int) (model.Area,bool) {
 	return s.repo.GetByID(id)
+}
+func (s *areaService) GetTree(id string) []model.Area {
+	return s.repo.GetTree(id)
 }
