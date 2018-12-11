@@ -36,11 +36,12 @@ func (c *RoleController) Get(context iris.Context) (mvc.Result)  {
 	//	panic(err)
 	//}
 	var po utils.PageOptions                                                //定义一个分页对象
+	po.Href = "/role"
 	po.EnableFirstLastLink = true                                           //是否显示首页尾页 默认false
 	po.EnablePreNexLink = true                                              //是否显示上一页下一页 默认为false
 	po.Currentpage = pageIndex                                              //传递当前页数,默认为1
-	po.PageSize = pageSize                                                  //页面大小  默认为20
-	_, pagerhtml := utils.GetPagerLinks(allcount,&po)						 //返回总页数,html
+	po.PageSize = pageSize                                                  //页面大小  默认为10
+	_, pagerhtml := utils.GetPagerLinks(allcount,&po,context)						 //返回总页数,html
 	maps := map[string]interface{}{
 		"ResultBean":     resultBean,
 		"totalItem":     allcount,

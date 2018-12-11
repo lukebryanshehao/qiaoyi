@@ -23,12 +23,11 @@ func (r *roleMemoryRepository) PageQuery(page *model.Page) (int,[]model.Role) {
 	roles := []model.Role{}
 
 	if page.PageSize == 0 {
-		page.PageIndex = 0
 		page.PageSize = 10
 	}
 	var allcount int
 	datasource.DB.Find(&roles).Count(&allcount)
-	datasource.DB.Limit(page.PageSize).Offset(page.PageSize * page.PageIndex).Find(&roles)
+	datasource.DB.Limit(page.PageSize).Offset(page.PageSize * (page.PageIndex-1)).Find(&roles)
 	for i := 0;i< len(roles);i++  {
 		var users []model.User
 		datasource.DB.Select("id,name,areaid,roleid").Where("roleid = ?",roles[i].ID).Find(&users)

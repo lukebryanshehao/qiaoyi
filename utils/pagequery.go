@@ -32,7 +32,7 @@ func GetPagesInfo(totalItem int,currentpage int, pagesize int) (int) {
 		currentpage = 1
 	}
 	if pagesize == 0 {
-		pagesize = 20
+		pagesize = 10
 	}
 	//var totalItem, totalpages int = 0, 0                                                          //总条数,总页数
 	var totalpages int = 0                                                          //总页数
@@ -64,11 +64,11 @@ func GetPagesInfo(totalItem int,currentpage int, pagesize int) (int) {
         this.TplNames = "test.html"
     }
 */
-func GetPagerLinks(totalItem int,po *PageOptions) (int, html.HTML) {
+func GetPagerLinks(totalItem int,po *PageOptions,context iris.Context) (int, html.HTML) {
 	var str string = ""
 	totalpages := GetPagesInfo(totalItem,po.Currentpage, po.PageSize)
 	po = setDefault(po, totalpages)
-	//DealUri(po, ctx)
+	DealUri(po, context)
 	if totalpages <= po.LinkItemCount {
 		str = fun1(po, totalpages) //显示完全  12345678910
 	} else if totalpages > po.LinkItemCount {
@@ -255,10 +255,10 @@ func setDefault(po *PageOptions, totalpages int) *PageOptions {
 		po.LinkItemCount = 10
 	}
 	if po.PageSize == 0 {
-		po.PageSize = 20
+		po.PageSize = 10
 	}
 	if len(po.ParamName) <= 0 {
-		po.ParamName = "pno"
+		po.ParamName = "PageIndex"
 	}
 	return po
 }
