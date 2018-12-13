@@ -9,7 +9,7 @@ type RoleRepository interface {
 	PageQuery(page *model.Page) (int,[]model.Role)
 	GetByID(id int) (model.Role,bool)
 	Save(role *model.Role) (bool,*model.Role)
-	DeleteByID(id uint) (bool)
+	DeleteByIDs(ids []uint) (bool)
 }
 
 func NewRoleRepository() RoleRepository {
@@ -30,7 +30,7 @@ func (r *roleMemoryRepository) PageQuery(page *model.Page) (int,[]model.Role) {
 	datasource.DB.Limit(page.PageSize).Offset(page.PageSize * (page.PageIndex-1)).Find(&roles)
 	for i := 0;i< len(roles);i++  {
 		var users []model.User
-		datasource.DB.Select("id,name,areaid,roleid").Where("roleid = ?",roles[i].ID).Find(&users)
+		datasource.DB.Select("id,name,areaid,roleid").Where("roleid = ?",roles[i].ID).Order("id desc").Find(&users)
 		roles[i].Users = users
 	}
 	return allcount,roles
@@ -55,12 +55,18 @@ func (r *roleMemoryRepository) Save(role *model.Role) (bool,*model.Role) {
 	return flag,role
 }
 
-func (r *roleMemoryRepository) DeleteByID(id uint) (bool) {
-
+func (r *roleMemoryRepository) DeleteByIDs(ids []uint) (bool) {
+	th := datasource.DB.Begin()
 	flag := true
-	if err := datasource.DB.Delete(&model.Role{}, id).Error; err != nil {
+	for _, id := range ids {
+		if err := th.Delete(&model.Role{}, id).Error; err != nil {
+			th.Rollback()
+			return false
+		}
+	}
+	if err1 := th.Commit().Error; err1 != nil {
+		th.Rollback()
 		flag = false
-		//panic(err)
 	}
 	return flag
 }

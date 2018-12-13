@@ -27,7 +27,7 @@
 </head>
 <body>
 <article class="page-container">
-	<form action="/role/update" method="post" class="form form-horizontal" id="form-admin-role-add">
+	<form action="/role/save" method="post" class="form form-horizontal" id="form-admin-role-add">
 		<input type="hidden"  id="ID" name="ID" value="{{.ResultBean.Data.ID}}" />
 		<input type="hidden"  id="CreatedAt" name="CreatedAt" value="{{.ResultBean.Data.CreatedAt}}" />
 		<div class="row cl">
@@ -45,7 +45,7 @@
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-3">描述：</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="{{.ResultBean.Data.Remark}}" placeholder="Remark" id="" name="Remark">
+				<input type="text" class="input-text" value="{{.ResultBean.Data.Remark}}" placeholder="" id="Remark" name="Remark">
 			</div>
 		</div>
 		<div class="row cl">

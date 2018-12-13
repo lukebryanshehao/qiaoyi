@@ -9,7 +9,7 @@ type RoleService interface {
 	PageQuery(page *model.Page) (int,[]model.Role)
 	GetByID(id int) (model.Role,bool)
 	Save(role *model.Role) (bool,*model.Role)
-	DeleteByID(id uint) (bool)
+	DeleteByIDs(ids []uint) (bool)
 }
 
 func NewRoleService(repo repositorys.RoleRepository) RoleService {
@@ -32,6 +32,6 @@ func (s *roleService) Save(role *model.Role) (bool,*model.Role) {
 	return s.repo.Save(role)
 }
 
-func (s *roleService) DeleteByID(id uint) (bool) {
-	return s.repo.DeleteByID(id)
+func (s *roleService) DeleteByIDs(ids []uint) (bool) {
+	return s.repo.DeleteByIDs(ids)
 }

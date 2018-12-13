@@ -18,6 +18,10 @@ func NewRoleController() *RoleController {
 	return &RoleController{Service: services.NewRoleService(repositorys.NewRoleRepository())}
 }
 
+type IdsCondition struct {
+	Ids []uint
+}
+
 func (c *RoleController) Get(context iris.Context) (mvc.Result)  {
 	page := &model.Page{}
 	pageSize,err1 := strconv.Atoi(context.Request().FormValue("PageSize"))
@@ -53,6 +57,20 @@ func (c *RoleController) Get(context iris.Context) (mvc.Result)  {
 	}
 }
 
+func (c *RoleController) GetAdd() (mvc.Result)  {
+	//resultBean := model.CreateResultWithMsg("获取失败!")
+	//if flag {
+	//	resultBean = model.CreateResultWithData(role)
+	//}
+	//maps := map[string]interface{}{
+	//	"ResultBean":     resultBean,
+	//}
+	return mvc.View{
+		Name: "admin-role-add.html",
+		Data: nil,
+	}
+}
+
 func (c *RoleController) GetBy(id int) (mvc.Result)  {
 	role,flag := c.Service.GetByID(id)
 
@@ -70,9 +88,13 @@ func (c *RoleController) GetBy(id int) (mvc.Result)  {
 }
 
 func (c *RoleController) PostDelete(context iris.Context)  (model.ResultBean) {
-	role := &model.Role{}
-	context.ReadJSON(&role)
-	flag := c.Service.DeleteByID(role.ID)
+	var idsCondition IdsCondition
+	var ids []uint
+	context.ReadJSON(&idsCondition)
+	for _, id := range idsCondition.Ids {
+		ids = append(ids, id)
+	}
+	flag := c.Service.DeleteByIDs(ids)
 	resultBean := model.CreateResultWithMsg("删除失败!")
 	if flag {
 		resultBean = model.CreateResultWithData("删除成功!")
@@ -80,7 +102,7 @@ func (c *RoleController) PostDelete(context iris.Context)  (model.ResultBean) {
 	return resultBean
 }
 
-func (c *RoleController) PostUpdate(context iris.Context)  (model.ResultBean) {
+func (c *RoleController) PostSave(context iris.Context)  (model.ResultBean) {
 	role := &model.Role{}
 	rid := context.Request().FormValue("ID")
 	if rid != ""{
