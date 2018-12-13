@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "github.com/Go-SQL-Driver/MySQL"
 	"github.com/iris-contrib/middleware/cors"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"

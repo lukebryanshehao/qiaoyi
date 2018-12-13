@@ -1,10 +1,10 @@
 {
   "Port":"8080",
-  "StaticPath":"C:/Users/SpaceJ/go/src/qiaoyi_back",
+  "StaticPath":"/home/go/src/qiaoyi_back",
   "TokenKey":"nKhiUoaSwRegTviVohjAOd",
-  "UserName":"root",
-  "Password":"123456",
-  "Ip":"localhost",
+  "UserName":"shehao",
+  "Password":"Lws51314,.",
+  "Ip":"47.110.39.112",
   "DBPort":"3306",
   "DBName":"qiaoyi"
 }

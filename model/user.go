@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
 	"qiaoyi_back/utils"
 )
@@ -21,11 +20,4 @@ type User struct {
 
 func (u *User) SetPwd(p string) {
 	u.Password = utils.Md5(u.Username + p)
-}
-
-func GenerateToken(user *User) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": user.Username,    //"exp":      time.Now().Add(time.Hour * 2).Unix(),// 可以添加过期时间
-	})
-	return token.SignedString([]byte("secret"))//对应的字符串请自行生成，最后足够使用加密后的字符串
 }

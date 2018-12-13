@@ -1,7 +1,6 @@
 package repositorys
 
 import (
-	_ "github.com/Go-SQL-Driver/MySQL"
 	"qiaoyi_back/datasource"
 	"qiaoyi_back/model"
 	"time"

@@ -1,7 +1,7 @@
 package datasource
 
 import (
-	_ "github.com/Go-SQL-Driver/MySQL"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/json-iterator/go"
 	"io/ioutil"
