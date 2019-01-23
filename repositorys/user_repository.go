@@ -30,12 +30,12 @@ func (r *userMemoryRepository) PageQuery(page *model.Page) (int,[]model.User) {
 	datasource.DB.Find(&users).Count(&allcount)
 	datasource.DB.Limit(page.PageSize).Offset(page.PageSize * page.PageIndex).Find(&users)
 	for i := 0;i< len(users);i++  {
-		areaid := users[i].Areaid
-		roleid := users[i].Roleid
+		areaid := users[i].AreaId
+		roleid := users[i].RoleId
 		var area model.Area
 		var role model.Role
-		datasource.DB.Table("areas").Where("id = ?", areaid).Scan(&area)
-		datasource.DB.Table("roles").Where("id = ?", roleid).Scan(&role)
+		datasource.DB.First(&area,areaid)
+		datasource.DB.First(&role,roleid)
 		users[i].Role = role
 		users[i].Area = area
 	}
@@ -70,8 +70,8 @@ func (r *userMemoryRepository) GetByID(id uint) (bool,model.User) {
 	}
 	var area model.Area
 	var role model.Role
-	datasource.DB.Table("areas").Where("id = ?", user.Areaid).Scan(&area)
-	datasource.DB.Table("roles").Where("id = ?", user.Roleid).Scan(&role)
+	datasource.DB.First(&area,user.AreaId)
+	datasource.DB.First(&role,user.RoleId)
 	user.Role = role
 	user.Area = area
 	return flag,user

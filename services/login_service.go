@@ -6,7 +6,7 @@ import (
 )
 
 type LoginService interface {
-	Exist(user *model.User) (bool,model.User)
+	Exist(user *model.User) bool
 	GetInfo(username string) (model.User)
 }
 
@@ -18,7 +18,7 @@ type loginService struct {
 	repo repositorys.LoginRepository
 }
 
-func (s *loginService) Exist(user *model.User) (bool,model.User) {
+func (s *loginService) Exist(user *model.User) bool {
 	return s.repo.Exist(user)
 }
 

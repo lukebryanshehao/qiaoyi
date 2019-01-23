@@ -2,20 +2,34 @@ package model
 
 type ResultBean struct {
 	Status bool
-	Count	int
 	Msg    string
+	Code    string
 	Data   interface{}
+	Token  string
+}
+type ResultPage struct {
+	Status    bool
+	Msg       string
+	PageCount int
+	Data      interface{}
 }
 
-func CreateResultWithData(data interface{}) ResultBean {
-	return ResultBean{true,0, "SUCCCESS", data}
+/*
+d为通用返回数据，e为可选参数，e不为空时返回失败result
+ */
+func NewResultBean(d interface{}, e ... string) *ResultBean {
+	if len(e) > 0 {
+		return &ResultBean{false, e[0],"200", nil, ""}
+	}
+	return &ResultBean{true, "success", "200",d, ""}
 }
 
-func CreateResultWithCountAndData(count int,data interface{}) ResultBean {
-	return ResultBean{true,count, "SUCCCESS", data}
+/*
+d为通用返回数据，e为可选参数，e不为空时返回失败result
+ */
+func NewResultPage(d interface{}, pageCount int, e ... string) *ResultPage {
+	if len(e) > 0 {
+		return &ResultPage{false, e[0], 0, ""}
+	}
+	return &ResultPage{true, "success", pageCount, d}
 }
-
-func CreateResultWithMsg(msg string) ResultBean {
-	return ResultBean{false,0, msg, nil}
-}
-

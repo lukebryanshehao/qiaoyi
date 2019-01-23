@@ -3,20 +3,19 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"net/http"
+	"qiaoyi_back/datasource"
 	"qiaoyi_back/model"
 	"qiaoyi_back/repositorys"
-	"qiaoyi_back/datasource"
 	"qiaoyi_back/services"
-	"qiaoyi_back/utils"
+	"qiaoyi_back/web/middleware"
 	"time"
 )
 
 type LoginController struct {
 	Service services.LoginService
+	Ctx iris.Context
 }
 
 func NewLoginController() *LoginController {
@@ -25,95 +24,67 @@ func NewLoginController() *LoginController {
 
 var key = datasource.DBconfig.TokenKey
 
-func (c *LoginController) Get(context iris.Context) (mvc.Result)  {
+func (c *LoginController) Get() (mvc.Result)  {
 	return mvc.View{
 		Name: "login.html",
 		Data: nil,
 	}
 }
 
-func (c *LoginController) PostLogin(context iris.Context) (mvc.Result) {
-	user := &model.User{}
-	user.Username = context.Request().FormValue("username")
-	user.Password = context.Request().FormValue("password")
-	user.Checkcode = context.Request().FormValue("checkcode")
-	//context.ReadJSON(&user)
-
-	var tokenState string
-	var tokenString string
-
+func (c *LoginController) PostLogin() (mvc.Result) {
+	var user model.User
+	c.Ctx.ReadJSON(&user)
 	if user.Username == "" || user.Password == "" {
-		cookie, err := context.Request().Cookie("token")
-		if err != nil {
-			fmt.Println("获取cookie错误或者没有cookie")
-			tokenState = "获取cookie错误或者没有cookie"
-		}else {
-			//cookie.Value
-			if cookie.Value != "" {
-				tokenString = cookie.Value
-			}
-
-			claims, ok := utils.ParseToken(tokenString, key)
-			if ok {
-				// 时间在u 之前
-				//is_after := t.After(t_new)
-				oldT, _ := time.Parse("2006-01-02 15:04:05",claims.(jwt.MapClaims)["exp"].(string))
-				ct := time.Now()
-				if  ct.Before(oldT){
-					ok = false
-					tokenState = "Token 已过期,请重新登陆"
-
-				} else {
-					tokenState = "Token 正常"
-				}
-
-				var username = claims.(jwt.MapClaims)["username"].(string)
-				var password = claims.(jwt.MapClaims)["password"].(string)
-				user.Username = username
-				user.Password = password
-
-			}else {
-				tokenState = "Token 无效,登陆失败!"
-			}
+		return mvc.View{
+			Name: "login.html",
+			Data: model.NewResultBean(false, "用户名或密码不能为空"),
 		}
-
 	}
 
-	exist,userInfo:= c.Service.Exist(user)
+	var token string
 
+	exist:= c.Service.Exist(&user)
 	if exist {
-		if tokenState != "Token 正常" {
-			t := time.Now()
-			type UserInfo map[string] interface{}
-			userInfo := make(UserInfo)
-			userInfo["username"] = user.Username
-			userInfo["password"] = user.Password
-			userInfo["exp"] = t.AddDate(0,2,0)
+		//创建客户端对应cookie以及在服务器中进行记录
+		var sessionID = middleware.SMgr.StartSession(c.Ctx.ResponseWriter(), c.Ctx.Request())
+		fmt.Println("-------------------创建新的sessionID:",sessionID)
+		//192.168.0.115
+		ip := c.Ctx.RemoteAddr()
+		user.RemoteAddr = ip
+		user.Session = sessionID
+		user.AccessTime = time.Now()
+		var loginUserInfo =	user
 
-			tokenString = utils.CreateToken(key,userInfo)
-
-			COOKIE_MAX_MAX_AGE := time.Hour * 24 * 30 *2/ time.Second   // 单位：秒。
-			maxAge := int(COOKIE_MAX_MAX_AGE)
-
-			token_cookie:=&http.Cookie{
-				Name:   "token",
-				Value:    tokenString,
-				Path:     "/",
-				HttpOnly: false,
-				MaxAge:   maxAge,
+		//踢除重复登录的
+		var onlineSessionIDList = middleware.SMgr.GetSessionIDList()
+		for _, onlineSessionID := range onlineSessionIDList {
+			fmt.Println("-------------------onlineSessionID:",onlineSessionID)
+			if userInfo, ok := middleware.SMgr.GetSessionVal(onlineSessionID, "UserInfo"); ok {
+				if value, ok := userInfo.(model.User); ok {
+					if value.ID == user.ID {
+						fmt.Println("-------------------踢除重复登录SessionID:",onlineSessionID)
+						middleware.SMgr.EndSessionBy(onlineSessionID)
+					}
+				}
 			}
-			context.SetCookie(token_cookie)
 		}
-		tokenState = "登陆成功!"
-	}else {
-		tokenState = "用户名或密码错误,登陆失败!"
+
+		//设置变量值
+		middleware.SMgr.SetSessionVal(sessionID, "UserInfo", loginUserInfo)
+		//user1.Session = sessionID
+		tokenString := middleware.GenerateToken(&user)
+		token = tokenString
 	}
+
+
+
 
 	html := "login.html"
-	resultBean := model.CreateResultWithMsg(tokenState)
-	if tokenState == "登陆成功!" {
+	resultBean := model.NewResultBean(false, "用户名或密码不能为空")
+	if exist {
 		html = "index-2.html"
-		resultBean = model.CreateResultWithData(userInfo)
+		resultBean = model.NewResultBean(user)
+		resultBean.Token = token
 	}
 	view := mvc.View{
 		Name: html,
@@ -122,27 +93,27 @@ func (c *LoginController) PostLogin(context iris.Context) (mvc.Result) {
 	return view
 }
 
-func (c *LoginController) PostLoginout(context iris.Context) {
-	context.RemoveCookie("token")
+func (c *LoginController) PostLoginout() {
+	c.Ctx.RemoveCookie("token")
 	//如果要设置自定义路径：
 	// ctx.SetCookieKV(name, value, iris.CookiePath("/custom/path/cookie/will/be/stored"))
 }
 
-func (c *LoginController) PostUpdatepassword(context iris.Context) (model.ResultBean)  {
-	return model.CreateResultWithMsg("")
+func (c *LoginController) PostUpdatepassword() (*model.ResultBean)  {
+	return model.NewResultBean("")
 }
 
-func (c *LoginController) PostGetinfo(context iris.Context) {
-	user := c.Service.GetInfo(context.Request().FormValue("username"))
-	resultBean := model.CreateResultWithMsg("获取失败")
+func (c *LoginController) PostGetinfo() {
+	user := c.Service.GetInfo(c.Ctx.Request().FormValue("username"))
+	resultBean := model.NewResultBean(false,"获取失败")
 	if user.ID != 0{
-		resultBean = model.CreateResultWithData(user)
+		resultBean = model.NewResultBean(user)
 	}
 	json, err := json.Marshal(resultBean)
 	if err != nil {
 		panic(err)
 	}
-	context.WriteString(string(json))
+	c.Ctx.WriteString(string(json))
 }
 
 

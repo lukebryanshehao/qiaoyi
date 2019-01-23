@@ -12,6 +12,7 @@ import (
 
 type RoleController struct {
 	Service services.RoleService
+	Ctx iris.Context
 }
 
 func NewRoleController() *RoleController {
@@ -22,19 +23,19 @@ type IdsCondition struct {
 	Ids []uint
 }
 
-func (c *RoleController) Get(context iris.Context) (mvc.Result)  {
+func (c *RoleController) Get() (mvc.Result)  {
 	page := &model.Page{}
-	pageSize,err1 := strconv.Atoi(context.Request().FormValue("PageSize"))
-	pageIndex,err2 := strconv.Atoi(context.Request().FormValue("PageIndex"))
+	pageSize,err1 := strconv.Atoi(c.Ctx.Request().FormValue("PageSize"))
+	pageIndex,err2 := strconv.Atoi(c.Ctx.Request().FormValue("PageIndex"))
 	if err1 != nil || err2 != nil {
 		//panic(err1)
 		//panic(err2)
 	}
 	page.PageSize = pageSize
 	page.PageIndex = pageIndex
-	//context.ReadJSON(&page)
+	//c.Ctx.ReadJSON(&page)
 	allcount,roles := c.Service.PageQuery(page)
-	resultBean := model.CreateResultWithCountAndData(allcount,roles)
+	resultBean := model.NewResultPage(roles,allcount)
 	//json, err := json.Marshal(resultBean)
 	//if err != nil {
 	//	panic(err)
@@ -45,7 +46,7 @@ func (c *RoleController) Get(context iris.Context) (mvc.Result)  {
 	po.EnablePreNexLink = true                                              //是否显示上一页下一页 默认为false
 	po.Currentpage = pageIndex                                              //传递当前页数,默认为1
 	po.PageSize = pageSize                                                  //页面大小  默认为10
-	_, pagerhtml := utils.GetPagerLinks(allcount,&po,context)						 //返回总页数,html
+	_, pagerhtml := utils.GetPagerLinks(allcount,&po,c.Ctx)						 //返回总页数,html
 	maps := map[string]interface{}{
 		"ResultBean":     resultBean,
 		"totalItem":     allcount,
@@ -74,9 +75,9 @@ func (c *RoleController) GetAdd() (mvc.Result)  {
 func (c *RoleController) GetBy(id int) (mvc.Result)  {
 	role,flag := c.Service.GetByID(id)
 
-	resultBean := model.CreateResultWithMsg("获取失败!")
+	resultBean := model.NewResultBean(false,"获取失败!")
 	if flag {
-		resultBean = model.CreateResultWithData(role)
+		resultBean = model.NewResultBean(role)
 	}
 	maps := map[string]interface{}{
 		"ResultBean":     resultBean,
@@ -87,48 +88,43 @@ func (c *RoleController) GetBy(id int) (mvc.Result)  {
 	}
 }
 
-func (c *RoleController) PostDelete(context iris.Context)  (model.ResultBean) {
-	var idsCondition IdsCondition
-	var ids []uint
-	context.ReadJSON(&idsCondition)
-	for _, id := range idsCondition.Ids {
-		ids = append(ids, id)
-	}
-	flag := c.Service.DeleteByIDs(ids)
-	resultBean := model.CreateResultWithMsg("删除失败!")
-	if flag {
-		resultBean = model.CreateResultWithData("删除成功!")
-	}
-	return resultBean
-}
-
-func (c *RoleController) PostSave(context iris.Context)  (model.ResultBean) {
-	role := &model.Role{}
-	rid := context.Request().FormValue("ID")
-	if rid != ""{
-		id,_ := strconv.Atoi(rid)
-		role.ID = uint(id)
-		role2,flag := c.Service.GetByID(id)
-		if flag {
-			role.CreatedAt = role2.CreatedAt
-		}
-	}
-
-	rolename := context.Request().FormValue("Rolename")
-	weight,_ := strconv.Atoi(context.Request().FormValue("Weight"))
-	remark := context.Request().FormValue("Remark")
-
-	role.Rolename = rolename
-	role.Weight = uint(weight)
-	role.Remark = remark
-	flag,role := c.Service.Save(role)
-	msg := "添加"
-	if rid != "" {
-		msg = "修改"
-	}
-	resultBean := model.CreateResultWithMsg(msg+"失败!")
-	if flag {
-		resultBean = model.CreateResultWithData(msg+"成功!")
-	}
-	return resultBean
-}
+//func (c *RoleController) PostDelete()  (model.ResultBean) {
+//	var idsCondition IdsCondition
+//	var ids []uint
+//	c.Ctx.ReadJSON(&idsCondition)
+//	for _, id := range idsCondition.Ids {
+//		ids = append(ids, id)
+//	}
+//	flag := c.Service.DeleteByIDs(ids)
+//	resultBean := model.NewResultBean(false,"删除失败!")
+//	if flag {
+//		resultBean = model.NewResultBean("删除成功!")
+//	}
+//	return resultBean
+//}
+//
+//func (c *RoleController) PostSave()  (model.ResultBean) {
+//	role := &model.Role{}
+//	rid := c.Ctx.Request().FormValue("ID")
+//	if rid != ""{
+//		id,_ := strconv.Atoi(rid)
+//		role.ID = uint(id)
+//		role2,flag := c.Service.GetByID(id)
+//		if flag {
+//			role.CreatedAt = role2.CreatedAt
+//		}
+//	}
+//
+//	//remark := c.Ctx.Request().FormValue("Remark")
+//
+//	flag,role := c.Service.Save(role)
+//	msg := "添加"
+//	if rid != "" {
+//		msg = "修改"
+//	}
+//	resultBean := model.CreateResultWithMsg(msg+"失败!")
+//	if flag {
+//		resultBean = model.CreateResultWithData(msg+"成功!")
+//	}
+//	return resultBean
+//}

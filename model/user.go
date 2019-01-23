@@ -2,22 +2,33 @@ package model
 
 import (
 	"github.com/jinzhu/gorm"
-	"qiaoyi_back/utils"
+	"time"
 )
 
+//用户表
 type User struct {
 	gorm.Model
-	Username string	`json:"Username"`//用户名
-	Password string `json:"Password"`//登陆密码
-	Name string	`json:"Name"`//名称
-	Age uint	`json:"Age"`//年龄
-	Areaid uint	`json:"AreaID"`//所属地区ID
-	Roleid uint	`json:"RoleID"`//所属角色ID
-	Checkcode string `gorm:"-"`	//验证码
-	Area Area
-	Role Role
+	Username      string //登录名
+	Password       string //登录密码
+	Name           string //真实姓名
+	Phone          string //手机号
+	Sex				uint	`gorm:"default:1"`  //性别	1男,2女
+	DepartmentName string //所属部门
+	AreaId			uint	//地区
+	RoleId			uint	//角色
+	Email          string //邮件
+	Birthday       string //生日
+	Address       string //联系地址
+	UserTypeId     int //所属用户类型ID
+	State          int //状态 1.正常,0.待审核,3.禁用,4.未通过
+	UserType       UserType
+	Role           Role
+	Area           Area
+	OldPassword       string	`gorm:"-"` //旧密码
+	Session       string	`gorm:"-"` //Session
+	AccessTime       time.Time	`gorm:"-"` //登陆时间
+	LastAccessTime       time.Time	`gorm:"-"` //最后访问时间
+	RemoteAddr       string	`gorm:"-"` //IP
+	MaxLifeTime       int64	`gorm:"-"` //session过期时间
 }
 
-func (u *User) SetPwd(p string) {
-	u.Password = utils.Md5(u.Username + p)
-}

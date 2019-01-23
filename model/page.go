@@ -1,6 +1,14 @@
 package model
 
 type Page struct {
-	PageSize int `gorm:"-";json:"PageSize"`   // 忽略这个字段
-	PageIndex int `gorm:"-";json:"PageIndex"`   // 忽略这个字段
+	PageSize int
+	PageIndex int
+	PageCount int
+}
+
+func PageIndex(page *Page) int {
+	if page.PageIndex == 0 {
+		page.PageIndex = 1
+	}
+	return (page.PageIndex - 1) * page.PageSize
 }

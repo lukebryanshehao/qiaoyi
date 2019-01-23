@@ -1,10 +1,18 @@
 {
   "Port":"8080",
-  "StaticPath":"C:/Users/SpaceJ/go/src/qiaoyi_back",
+  "StaticPath":"C:/work/goworkspace/src/qiaoyi_back",
   "TokenKey":"nKhiUoaSwRegTviVohjAOd",
   "UserName":"root",
   "Password":"123456",
   "Ip":"localhost",
   "DBPort":"3306",
-  "DBName":"qiaoyi"
+  "DBName":"qiaoyi",
+  "RedisHost": "ssyg.spacej.tech",
+  "RedisPort": "16379",
+  "RedisPassword": "jaz",
+  "SmsAccount":"N2783688",
+  "SmsPassword":"GvJUkN3h9O3d01",
+  "SmsUrl":"http://smssh1.253.com/msg/send/json",
+  "SysUrl":"http://localhost:11118/",
+  "FileSavePath":"C:/work/goworkspace/src/file"
 }

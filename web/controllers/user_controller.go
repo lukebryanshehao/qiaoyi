@@ -10,61 +10,62 @@ import (
 
 type UserController struct {
 	Service services.UserService
+	Ctx iris.Context
 }
 
 func NewUserController() *UserController {
 	return &UserController{Service: services.NewUserService(repositorys.NewUserRepository())}
 }
 
-func (c *UserController) PostInsert(context iris.Context) (model.ResultBean)  {
+func (c *UserController) PostInsert() (*model.ResultBean)  {
 	user := &model.User{}
-	context.ReadJSON(&user)
+	c.Ctx.ReadJSON(&user)
 	flag,user := c.Service.Save(user)
-	resultBean := model.CreateResultWithMsg("添加失败!")
+	resultBean := model.NewResultBean(false,"添加失败!")
 	if flag {
-		resultBean = model.CreateResultWithData("添加成功!")
+		resultBean = model.NewResultBean("添加成功!")
 	}
 	return resultBean
 }
 
-func (c *UserController) PostDeleteBy(id uint) (model.ResultBean)  {
+func (c *UserController) PostDeleteBy(id uint) (*model.ResultBean)  {
 	flag := c.Service.DeleteByID(id)
-	resultBean := model.CreateResultWithMsg("删除失败!")
+	resultBean := model.NewResultBean(false,"删除失败!")
 	if flag {
-		resultBean = model.CreateResultWithData(nil)
+		resultBean = model.NewResultBean(nil)
 	}
 	return resultBean
 }
 
-func (c *UserController) PostUpdate(context iris.Context) (model.ResultBean)  {
+func (c *UserController) PostUpdate() (*model.ResultBean)  {
 	user := &model.User{}
-	context.ReadJSON(&user)
+	c.Ctx.ReadJSON(&user)
 	flag,user := c.Service.Save(user)
-	resultBean := model.CreateResultWithMsg("修改失败!")
+	resultBean := model.NewResultBean(false,"修改失败!")
 	if flag {
-		resultBean = model.CreateResultWithData("修改成功!")
+		resultBean = model.NewResultBean("修改成功!")
 	}
 	return resultBean
 }
 
-func (c *UserController) PostAll(context iris.Context) (model.ResultBean)  {
+func (c *UserController) PostAll() (*model.ResultPage)  {
 	page := &model.Page{}
-	context.ReadJSON(&page)
+	c.Ctx.ReadJSON(&page)
 	allcount,users := c.Service.PageQuery(page)
 	_, err := json.Marshal(users)
-	resultBean := model.CreateResultWithCountAndData(allcount,users)
+	resultBean := model.NewResultPage(users,allcount)
 	if err != nil {
-		resultBean = model.CreateResultWithMsg("")
+		resultBean = model.NewResultPage("",0)
 		panic(err)
 	}
 	return resultBean
 }
 
-func (c *UserController) GetBy(id uint) (model.ResultBean)  {
+func (c *UserController) GetBy(id uint) (*model.ResultBean)  {
 	flag,user := c.Service.GetByID(id)
-	resultBean := model.CreateResultWithMsg("获取失败!")
+	resultBean := model.NewResultBean(false,"获取失败!")
 	if flag {
-		resultBean = model.CreateResultWithData(user)
+		resultBean = model.NewResultBean(user)
 	}
 	return resultBean
 }
