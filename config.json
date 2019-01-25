@@ -1,7 +1,6 @@
 {
   "Port":"8080",
   "StaticPath":"C:/work/goworkspace/src/qiaoyi_back",
-  "TokenKey":"nKhiUoaSwRegTviVohjAOd",
   "UserName":"root",
   "Password":"123456",
   "Ip":"localhost",

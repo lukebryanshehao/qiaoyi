@@ -59,13 +59,6 @@ func (c *RoleController) Get() (mvc.Result)  {
 }
 
 func (c *RoleController) GetAdd() (mvc.Result)  {
-	//resultBean := model.CreateResultWithMsg("获取失败!")
-	//if flag {
-	//	resultBean = model.CreateResultWithData(role)
-	//}
-	//maps := map[string]interface{}{
-	//	"ResultBean":     resultBean,
-	//}
 	return mvc.View{
 		Name: "admin-role-add.html",
 		Data: nil,

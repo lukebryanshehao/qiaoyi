@@ -10,11 +10,10 @@ import (
 func InitRouter(app *iris.Application) {
 	go app.Use(middleware.SaveSystemLog)
 	mvc.New(app.Party("/login")).Handle(controllers.NewLoginController())
-
+	mvc.New(app.Party("/index")).Handle(controllers.NewIndexController())
 	app.Use(middleware.CheckSession)
 	app.Use(middleware.GetJWT().Serve)
 	mvc.New(app.Party("/area")).Handle(controllers.NewAreaController())
-	mvc.New(app.Party("/index")).Handle(controllers.NewIndexController())
 	mvc.New(app.Party("/role")).Handle(controllers.NewRoleController())
 	mvc.New(app.Party("/user")).Handle(controllers.NewUserController())
 	mvc.New(app.Party("/system")).Handle(controllers.NewSystemController())

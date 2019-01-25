@@ -138,7 +138,9 @@ func SaveSystemLog(ctx iris.Context)  {
 			}
 		}
 	}
-	fmt.Println(token,"-----",nickName,"-----",userID)
+	fmt.Println("token-----",token)
+	fmt.Println("Username-----",nickName)
+	fmt.Println("userID-----",userID)
 
 	if (token != "" && token != "undefined") || url.String() == "/user/login" {
 		var systemLog model.SystemLog

@@ -30,8 +30,10 @@
 <div class="header"></div>
 <div class="loginWraper">
   <div id="loginform" class="loginBox">
-    <form class="form form-horizontal" action="/login/login" method="post">
+    <span id="errMsg"></span>
+    <form class="form form-horizontal" action="#">
       <div class="row cl">
+
         <label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60d;</i></label>
         <div class="formControls col-xs-8">
           <input id="username" name="username" type="text" placeholder="账户" class="input-text size-L">
@@ -52,12 +54,12 @@
         <div class="formControls col-xs-8 col-xs-offset-3">
           <label for="online">
             <input type="checkbox" name="online" id="online" value="">
-            使我保持登录状态</label>
+            记住密码</label>
         </div>
       </div>
       <div class="row cl">
         <div class="formControls col-xs-8 col-xs-offset-3">
-          <input name="" type="submit" class="btn btn-success radius size-L" value="&nbsp;登&nbsp;&nbsp;&nbsp;&nbsp;录&nbsp;">
+          <input name="" type="submit" onClick="submitAction();return false;" class="btn btn-success radius size-L" value="&nbsp;登&nbsp;&nbsp;&nbsp;&nbsp;录&nbsp;">
           <input name="" type="reset" class="btn btn-default radius size-L" value="&nbsp;取&nbsp;&nbsp;&nbsp;&nbsp;消&nbsp;">
         </div>
       </div>
@@ -66,7 +68,46 @@
 </div>
 <div class="footer">Copyright 2018-2010</div>
 <script type="text/javascript" src="/src/static/lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/src/static/lib/token.js"></script>
 <script type="text/javascript" src="/src/static/static/h-ui/js/H-ui.min.js"></script>
+<script>
+  function submitAction(){
+    $.ajax({
+      type:"POST",
+      url:"/login/login",
+      dataType:"json", //预期服务器返回数据的类型
+      //相当于 //data: "{'username':'admin', 'password':'123456'}",
+      data: JSON.stringify({"username": $("#username").val(),"password": $("#password").val()}), //传输的数据
+      success:function(data){
+        if(data.Status){
+          setCookie("QYZ_Token",data.Token)
+          var userJson = {"username":data.Data.Username, "name":data.Data.Name,
+            "phone":data.Data.Phone,"departmentname":data.Data.DepartmentName,
+            "areaid":data.Data.AreaId,"roleid":data.Data.RoleId,
+            "usertypeid":data.Data.UserTypeId
+          };
+          setCookie("QYZ_UserInfo",JSON.stringify(userJson))
+          //alert(getCookie("QYZ_UserInfo"))
+          window.open("/index",'_self')
+        }else{
+          if(data.Code == "512"){
+            window.open("/login",'_self')
+          }else {
+            $("#errMsg").html(data.Msg);
+          }
 
+        }
+      },
+      error:function(jqXHR){
+        if(data.Code == "512"){
+          window.open("/login",'_self')
+        }else {
+          alert("发生错误："+ jqXHR.Status);
+        }
+      },
+    });
+  }
+
+</script>
 </body>
 </html>

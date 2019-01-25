@@ -1,11 +1,9 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"qiaoyi_back/datasource"
 	"qiaoyi_back/model"
 	"qiaoyi_back/repositorys"
 	"qiaoyi_back/services"
@@ -22,8 +20,6 @@ func NewLoginController() *LoginController {
 	return &LoginController{Service: services.NewLoginService(repositorys.NewLoginRepository())}
 }
 
-var key = datasource.DBconfig.TokenKey
-
 func (c *LoginController) Get() (mvc.Result)  {
 	return mvc.View{
 		Name: "login.html",
@@ -31,14 +27,13 @@ func (c *LoginController) Get() (mvc.Result)  {
 	}
 }
 
-func (c *LoginController) PostLogin() (mvc.Result) {
+func (c *LoginController) PostLogin() *model.ResultBean {
 	var user model.User
 	c.Ctx.ReadJSON(&user)
+	//user.Username = c.Ctx.Request().FormValue("username")
+	//user.Password = c.Ctx.Request().FormValue("password")
 	if user.Username == "" || user.Password == "" {
-		return mvc.View{
-			Name: "login.html",
-			Data: model.NewResultBean(false, "用户名或密码不能为空"),
-		}
+		return model.NewResultBean(false, "用户名或密码不能为空")
 	}
 
 	var token string
@@ -71,26 +66,16 @@ func (c *LoginController) PostLogin() (mvc.Result) {
 
 		//设置变量值
 		middleware.SMgr.SetSessionVal(sessionID, "UserInfo", loginUserInfo)
-		//user1.Session = sessionID
 		tokenString := middleware.GenerateToken(&user)
 		token = tokenString
 	}
 
-
-
-
-	html := "login.html"
-	resultBean := model.NewResultBean(false, "用户名或密码不能为空")
+	resultBean := model.NewResultBean(false, "用户名或密码错误")
 	if exist {
-		html = "index-2.html"
 		resultBean = model.NewResultBean(user)
 		resultBean.Token = token
 	}
-	view := mvc.View{
-		Name: html,
-		Data: resultBean,
-	}
-	return view
+	return resultBean
 }
 
 func (c *LoginController) PostLoginout() {
@@ -99,21 +84,19 @@ func (c *LoginController) PostLoginout() {
 	// ctx.SetCookieKV(name, value, iris.CookiePath("/custom/path/cookie/will/be/stored"))
 }
 
-func (c *LoginController) PostUpdatepassword() (*model.ResultBean)  {
+func (c *LoginController) PostUpdatepassword() *model.ResultBean  {
 	return model.NewResultBean("")
 }
 
-func (c *LoginController) PostGetinfo() {
-	user := c.Service.GetInfo(c.Ctx.Request().FormValue("username"))
+func (c *LoginController) PostGetinfo()*model.ResultBean {
+	var user model.User
+	c.Ctx.ReadJSON(&user)
+	user = c.Service.GetInfo(user.Username)
 	resultBean := model.NewResultBean(false,"获取失败")
 	if user.ID != 0{
 		resultBean = model.NewResultBean(user)
 	}
-	json, err := json.Marshal(resultBean)
-	if err != nil {
-		panic(err)
-	}
-	c.Ctx.WriteString(string(json))
+	return resultBean
 }
 
 

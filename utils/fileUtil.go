@@ -16,7 +16,6 @@ import (
 type Confs struct {
 	Port          string `json:"Port"`
 	StaticPath    string `json:"StaticPath"`
-	TokenKey      string `json:"TokenKey"`
 	RedisHost     string `json:"RedisHost"`
 	RedisPort     string `json:"RedisPort"`
 	RedisPassword string `json:"RedisPassword"`

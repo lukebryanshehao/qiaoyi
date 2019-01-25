@@ -48,8 +48,8 @@ func (mgr *SessionMgr) StartSession(w http.ResponseWriter, r *http.Request) stri
 	var session *Session = &Session{mSessionID: newSessionID, mLastTimeAccessed: time.Now(), mValues: make(map[interface{}]interface{})}
 	mgr.mSessions[newSessionID] = session
 	//让浏览器cookie设置过期时间
-	cookie := http.Cookie{Name: mgr.mCookieName, Value: newSessionID, Path: "/", HttpOnly: true, MaxAge: int(mgr.mMaxLifeTime)}
-	http.SetCookie(w, &cookie)
+	//cookie := http.Cookie{Name: mgr.mCookieName, Value: newSessionID, Path: "/", HttpOnly: true, MaxAge: int(mgr.mMaxLifeTime)}
+	//http.SetCookie(w, &cookie)
 
 	return newSessionID
 }

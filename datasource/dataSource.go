@@ -14,7 +14,6 @@ var DB *gorm.DB
 type dbconfig struct {
 	Port       string `json:"Port"`
 	StaticPath       string `json:"StaticPath"`
-	TokenKey       string `json:"TokenKey"`
 	UserName       string `json:"UserName"`
 	Password string `json:"Password"`
 	Ip string `json:"Ip"`
