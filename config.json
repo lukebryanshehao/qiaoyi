@@ -1,6 +1,6 @@
 {
   "Port":"8080",
-  "StaticPath":"/home/go/src/qiaoyi_back/static",
+  "StaticPath":"/home/go/src/qiaoyi_back",
   "UserName":"shehao",
   "Password":"Lws51314,.",
   "Ip":"localhost",
